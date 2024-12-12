@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحويل الصوت باستخدام FFmpeg</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            direction: rtl;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #4a4a4a;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: right;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+            text-align: left;
+            width: 300px;
+        }
+        td {
+            background-color: #ffffff;
+            width: 150px;
+        }
+        input[type="text"] {
+            text-align: left; /* الكتابة على اليسار */
+            direction: ltr;   /* اتجاه الكتابة لليسار */
+        }
+        button {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            font-size: 16px;
+            color: white;
+            background-color: #28a745;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+<h1>Termux ffmpeg (Mp3)</h1>
+<table>
+    <tr>
+        <td><input type="text" id="inputFile" placeholder="حدد مسار الملف" /></td>
+        <th>ملف الإدخال</th>
+    </tr>
+    <tr>
+        <td><input type="text" id="newFileName" placeholder="اسم الملف الجديد" /></td>
+        <th>اسم الملف الجديد</th>
+    </tr>
+</table>
+
+<button id="generateCode">إنهاء</button>
+
+<script>
+    document.getElementById('generateCode').addEventListener('click', function() {
+        const inputFile = document.getElementById('inputFile').value.trim();
+        const newFileName = document.getElementById('newFileName').value.trim();
+
+        if (!inputFile || !newFileName) {
+            Swal.fire({
+                title: 'خطأ',
+                text: 'يرجى تحديد مسار الملف واسم الملف الجديد.',
+                icon: 'error',
+                confirmButtonText: 'موافق'
+            });
+            return;
+        }
+
+        const pathPattern = /^\/[a-zA-Z0-9_.-]+(\/[a-zA-Z0-9_.-]+)*\/?[a-zA-Z0-9_.-]+\.(m4a|mp3|wav|ogg|flac)$/;
+        if (!pathPattern.test(inputFile)) {
+            Swal.fire({
+                title: 'خطأ',
+                text: 'يرجى إدخال مسار ملف صحيح بصيغة مدعومة مثل: .m4a، .mp3، .wav، .ogg، أو .flac',
+                icon: 'error',
+                confirmButtonText: 'موافق'
+            });
+            return;
+        }
+
+        // إضافة .mp3 إذا لم تكن موجودة في نهاية الاسم
+        let finalFileName = newFileName;
+        if (!finalFileName.endsWith('.mp3')) {
+            finalFileName += '.mp3';
+        }
+
+        // استخدام نفس المسار مع تغيير الاسم إلى المستخدم المدخل
+        const newPath = inputFile.substring(0, inputFile.lastIndexOf('/')) + '/' + finalFileName;
+        const command = `ffmpeg -i ${inputFile} ${newPath}`;
+
+        Swal.fire({
+            title: 'كود FFmpeg',
+            text: command, // عرض الكود كنص عادي
+            showCancelButton: true,
+            confirmButtonText: 'نسخ الكود',
+            cancelButtonText: 'إغلاق'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                navigator.clipboard.writeText(command).then(() => {
+                    Swal.fire('تم النسخ!', 'تم نسخ الكود إلى الحافظة.', 'success');
+                }, () => {
+                    Swal.fire('خطأ', 'فشل في نسخ الكود.', 'error');
+                });
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
