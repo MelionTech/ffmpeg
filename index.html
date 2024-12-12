@@ -59,15 +59,16 @@
             background-color: #218838;
         }
         pre {
+            display: none; /* أخفِ الـ pre في البداية */
             background-color: #f4f4f4;
             border: 1px solid #ddd;
             padding: 10px;
-            cursor: pointer;
+            overflow-x: auto;
             white-space: pre-wrap;
-            overflow: auto;
-            font-size: 10px; /* حجم الخط 10px */
-            text-align: left; /* محاذاة النص إلى اليسار */
-            display: none; /* إخفاء العنصر في البداية */
+            text-align: left;
+            max-height: 300px;
+            overflow-y: auto;
+            cursor: pointer; /* تغيير شكل المؤشر عند المرور */
         }
     </style>
 </head>
@@ -93,8 +94,15 @@
         const inputFile = document.getElementById('inputFile').value.trim();
         const newFileName = document.getElementById('newFileName').value.trim();
 
-        if (!inputFile || !newFileName) {
-            alert('يرجى تحديد مسار الملف واسم الملف الجديد.');
+        // تحقق من اسم الملف الجديد
+        const namePattern = /^[A-Za-z]{1,12}$/; // اسم الملف الجديد يجب أن يكون بين 1 إلى 12 حرفًا إنجليزيًا بدون مسافات
+        if (!namePattern.test(newFileName)) {
+            alert('يرجى إدخال اسم ملف جديد صحيح (1-12 حرفًا إنجليزيًا بدون مسافات).');
+            return;
+        }
+
+        if (!inputFile) {
+            alert('يرجى تحديد مسار الملف.');
             return;
         }
 
@@ -114,19 +122,21 @@
         const newPath = inputFile.substring(0, inputFile.lastIndexOf('/')) + '/' + finalFileName;
         const command = `ffmpeg -i ${inputFile} ${newPath}`;
 
-        // عرض الكود في عنصر pre
+        // عرض الكود في block code
         const codeBlock = document.getElementById('codeBlock');
         codeBlock.textContent = command; // استخدم textContent للحماية من XSS
-        codeBlock.style.display = 'block'; // إظهار العنصر
+        codeBlock.style.display = 'block';
+    });
 
-        // إضافة حدث النقر لنسخ الكود
-        codeBlock.onclick = function() {
-            navigator.clipboard.writeText(command).then(() => {
-                alert('تم نسخ الكود إلى الحافظة.');
-            }, () => {
-                alert('فشل في نسخ الكود.');
-            });
-        };
+    document.getElementById('codeBlock').addEventListener('click', function() {
+        const codeBlock = document.getElementById('codeBlock');
+        const textarea = document.createElement('textarea');
+        textarea.value = codeBlock.textContent; // استخدم textContent
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert('تم نسخ الكود إلى الحافظة.');
     });
 </script>
 
