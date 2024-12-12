@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تحويل الصوت باستخدام FFmpeg</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -40,8 +39,8 @@
             width: 150px;
         }
         input[type="text"] {
-            text-align: left; /* الكتابة على اليسار */
-            direction: ltr;   /* اتجاه الكتابة لليسار */
+            text-align: left;
+            direction: ltr;
         }
         button {
             display: block;
@@ -63,15 +62,14 @@
             background-color: #f4f4f4;
             border: 1px solid #ddd;
             padding: 10px;
-            cursor: pointer; /* تغيير المؤشر عند المرور */
-            white-space: pre-wrap; /* يسمح بلف الأسطر الطويلة */
-            overflow: auto; /* يسمح بالتمرير إذا كان النص طويلاً */
+            cursor: pointer;
+            white-space: pre-wrap;
+            overflow: auto;
             font-size: 10px; /* حجم الخط 10px */
             text-align: left; /* محاذاة النص إلى اليسار */
             display: none; /* إخفاء العنصر في البداية */
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 
@@ -96,23 +94,13 @@
         const newFileName = document.getElementById('newFileName').value.trim();
 
         if (!inputFile || !newFileName) {
-            Swal.fire({
-                title: 'خطأ',
-                text: 'يرجى تحديد مسار الملف واسم الملف الجديد.',
-                icon: 'error',
-                confirmButtonText: 'موافق'
-            });
+            alert('يرجى تحديد مسار الملف واسم الملف الجديد.');
             return;
         }
 
         const pathPattern = /^\/[a-zA-Z0-9_.-]+(\/[a-zA-Z0-9_.-]+)*\/?[a-zA-Z0-9_.-]+\.(m4a|mp3|wav|ogg|flac)$/;
         if (!pathPattern.test(inputFile)) {
-            Swal.fire({
-                title: 'خطأ',
-                text: 'يرجى إدخال مسار ملف صحيح بصيغة مدعومة مثل: .m4a، .mp3، .wav، .ogg، أو .flac',
-                icon: 'error',
-                confirmButtonText: 'موافق'
-            });
+            alert('يرجى إدخال مسار ملف صحيح بصيغة مدعومة مثل: .m4a، .mp3، .wav، .ogg، أو .flac');
             return;
         }
 
@@ -134,9 +122,9 @@
         // إضافة حدث النقر لنسخ الكود
         codeBlock.onclick = function() {
             navigator.clipboard.writeText(command).then(() => {
-                Swal.fire('تم النسخ!', 'تم نسخ الكود إلى الحافظة.', 'success');
+                alert('تم نسخ الكود إلى الحافظة.');
             }, () => {
-                Swal.fire('خطأ', 'فشل في نسخ الكود.', 'error');
+                alert('فشل في نسخ الكود.');
             });
         };
     });
