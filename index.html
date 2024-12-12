@@ -59,6 +59,17 @@
         button:hover {
             background-color: #218838;
         }
+        pre {
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            padding: 10px;
+            cursor: pointer; /* تغيير المؤشر عند المرور */
+            white-space: pre-wrap; /* يسمح بلف الأسطر الطويلة */
+            overflow: auto; /* يسمح بالتمرير إذا كان النص طويلاً */
+            font-size: 10px; /* حجم الخط 10px */
+            text-align: left; /* محاذاة النص إلى اليسار */
+            display: none; /* إخفاء العنصر في البداية */
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -77,6 +88,7 @@
 </table>
 
 <button id="generateCode">إنهاء</button>
+<pre id="codeBlock"></pre>
 
 <script>
     document.getElementById('generateCode').addEventListener('click', function() {
@@ -114,21 +126,19 @@
         const newPath = inputFile.substring(0, inputFile.lastIndexOf('/')) + '/' + finalFileName;
         const command = `ffmpeg -i ${inputFile} ${newPath}`;
 
-        Swal.fire({
-            title: 'كود FFmpeg',
-            text: command, // عرض الكود كنص عادي
-            showCancelButton: true,
-            confirmButtonText: 'نسخ الكود',
-            cancelButtonText: 'إغلاق'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                navigator.clipboard.writeText(command).then(() => {
-                    Swal.fire('تم النسخ!', 'تم نسخ الكود إلى الحافظة.', 'success');
-                }, () => {
-                    Swal.fire('خطأ', 'فشل في نسخ الكود.', 'error');
-                });
-            }
-        });
+        // عرض الكود في عنصر pre
+        const codeBlock = document.getElementById('codeBlock');
+        codeBlock.textContent = command; // استخدم textContent للحماية من XSS
+        codeBlock.style.display = 'block'; // إظهار العنصر
+
+        // إضافة حدث النقر لنسخ الكود
+        codeBlock.onclick = function() {
+            navigator.clipboard.writeText(command).then(() => {
+                Swal.fire('تم النسخ!', 'تم نسخ الكود إلى الحافظة.', 'success');
+            }, () => {
+                Swal.fire('خطأ', 'فشل في نسخ الكود.', 'error');
+            });
+        };
     });
 </script>
 
